@@ -2,6 +2,8 @@
 [![Build Status](https://travis-ci.org/AlloyTools/org.alloytools.alloy.svg?branch=master)](https://travis-ci.org/AlloyTools/org.alloytools.alloy)
 # Alloy
 
+*Alloy 5, modified by Daniel Verlaque*
+
 Alloy 4 is a self-contained executable, which includes the Kodkod
 model finder and a variety of SAT solvers, as well as the standard
 Alloy library and a collection of tutorial examples. The same jar file
