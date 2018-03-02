@@ -31,6 +31,8 @@ import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -107,7 +109,7 @@ public final class VizGUI implements ComponentListener {
 	private final JButton		projectionButton, openSettingsButton, closeSettingsButton, magicLayout,
 			loadSettingsButton, saveSettingsButton, saveAsSettingsButton, resetSettingsButton, updateSettingsButton,
 			openEvaluatorButton, closeEvaluatorButton, enumerateButton, vizButton, treeButton,
-			txtButton/* , dotButton, xmlButton */;
+			txtButton, screenshotButton/* , dotButton, xmlButton */;
 
 	/**
 	 * This list must contain all the display mode buttons (that is, vizButton,
@@ -587,6 +589,9 @@ public final class VizGUI implements ComponentListener {
 					"Save the current theme customization as a new theme file", "images/24_save.gif", doSaveThemeAs()));
 			toolbar.add(resetSettingsButton = OurUtil.button("Reset", "Reset the theme customization",
 					"images/24_settings_close2.gif", doResetTheme()));
+			toolbar.add(screenshotButton = OurUtil.button("Screenshot", "Export a screenshot",
+					"images/24_screenshot.gif", doSaveScreenshot()));
+
 		} finally {
 			wrap = false;
 		}
@@ -1286,6 +1291,61 @@ public final class VizGUI implements ComponentListener {
 		return null;
 	}
 
+	private Runner doSaveScreenshot() {
+		if (wrap)
+			return wrapMe();
+
+		final String origTitle = frame.getTitle();
+		frame.setTitle(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		String modelFilename = (myState != null ? myState.getOriginalInstance().filename : null);
+
+		String folderPrefix, screenshotName;
+		if (modelFilename != null) {
+			int i = modelFilename.lastIndexOf(File.separatorChar);
+			folderPrefix = modelFilename.substring(0, i);
+			screenshotName = modelFilename.substring(i + 1);
+		} else {
+			folderPrefix = ".";
+			screenshotName = "screenshot";
+		}
+
+		screenshotName = screenshotName.replace(".als", "");
+
+		String finalFilename;
+		int num = 1;
+		while (Files.exists(
+				Paths.get(finalFilename = (folderPrefix + File.separator + screenshotName + '_' + num + ".png")))) {
+			num++;
+		}
+
+		final String ffn = finalFilename;
+		try {
+			getViewer().alloySaveAsPNG(finalFilename, 2.25, 72, 72);
+			final JFrame fr = frame;
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					fr.setTitle(">>> Saved " + ffn);
+					try {
+						Thread.sleep(2500);
+						fr.setTitle(origTitle);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+				}
+			}).start();
+			;
+		} catch (IOException e) {
+			e.printStackTrace();
+			OurDialog.showtext("Could not save " + finalFilename, e.getMessage());
+		}
+
+		return null;
+
+	}
+
+	
 	/** This method inserts "Minimize" and "Maximize" entries into a JMenu. */
 	public void addMinMaxActions(JMenu menu) {
 		try {

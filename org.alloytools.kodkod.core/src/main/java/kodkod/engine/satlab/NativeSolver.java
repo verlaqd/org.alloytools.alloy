@@ -25,6 +25,8 @@ import java.io.File;
 
 import org.alloytools.nativecode.util.NativeCode;
 
+//import org.alloytools.nativecode.util.NativeCode;
+
 /**
  * A skeleton implementation of a wrapper for a sat solver accessed through JNI.
  *
