@@ -289,6 +289,7 @@ public final class VizGraphPanel extends JPanel {
 	public void remakeAll() {
 		Map<AlloyType,AlloyAtom> map = new LinkedHashMap<AlloyType,AlloyAtom>();
 		navPanel.removeAll();
+		selectedAtoms.clear();
 		for (AlloyType type : vizState.getProjectedTypes()) {
 			List<AlloyAtom> atoms = vizState.getOriginalInstance().type2atoms(type);
 			TypePanel tp = type2panel.get(type);
@@ -306,7 +307,11 @@ public final class VizGraphPanel extends JPanel {
 
 			navPanel.add(tp);
 			map.put(tp.getAlloyType(), tp.getAlloyAtom());
-			selectedAtoms.put(type.toString(), tp.getAlloyAtom().toString());
+			try {
+				selectedAtoms.put(type.toString(), tp.getAlloyAtom().toString());
+			} catch (NullPointerException npe) {
+				// nothing
+			}
 		}
 		currentProjection = new AlloyProjection(map);
 		JPanel graph = vizState.getGraph(currentProjection);

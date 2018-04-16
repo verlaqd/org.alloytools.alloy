@@ -653,6 +653,7 @@ public final strictfp class GraphViewer extends JPanel {
 			gr.setColor(BLACK);
 			gr.scale(scale, scale);
 			gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			gr.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			graph.draw(new Artist(gr), scale, null, false);
 
 			if (projectionInfo.size() == 0) {
@@ -676,6 +677,7 @@ public final strictfp class GraphViewer extends JPanel {
 		final int projInfoHeight = (projectionInfo.size() + 2) * fontSize;
 		BufferedImage biggerBF = new BufferedImage(width, height + projInfoHeight, BufferedImage.TYPE_INT_RGB);
 		Graphics2D bgr = (Graphics2D) biggerBF.getGraphics();
+		bgr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		bgr.setColor(Color.GRAY);
 		bgr.fillRect(0, 0, biggerBF.getWidth(), biggerBF.getHeight());
 		bgr.drawImage(bf, 0, 0, null);

@@ -94,8 +94,8 @@ public final class VizGUI implements ComponentListener {
 	private VisualizerMode		currentMode		= VisualizerMode.get();
 
 	/**
-	 * The JFrame for the main GUI window; or null if we intend to display the
-	 * graph inside a user-given JPanel instead.
+	 * The JFrame for the main GUI window; or null if we intend to display the graph
+	 * inside a user-given JPanel instead.
 	 */
 	private final JFrame		frame;
 
@@ -109,8 +109,8 @@ public final class VizGUI implements ComponentListener {
 	@SuppressWarnings("unused")
 	private final JButton		projectionButton, openSettingsButton, closeSettingsButton, magicLayout,
 			loadSettingsButton, saveSettingsButton, saveAsSettingsButton, resetSettingsButton, updateSettingsButton,
-			openEvaluatorButton, closeEvaluatorButton, enumerateButton, vizButton, treeButton,
-			txtButton, screenshotButton/* , dotButton, xmlButton */;
+			openEvaluatorButton, closeEvaluatorButton, enumerateButton, vizButton, treeButton, txtButton,
+			screenshotButton/* , dotButton, xmlButton */;
 
 	/**
 	 * This list must contain all the display mode buttons (that is, vizButton,
@@ -131,8 +131,8 @@ public final class VizGUI implements ComponentListener {
 	private int					fontSize		= 12;
 
 	/**
-	 * 0: theme and evaluator are both invisible; 1: theme is visible; 2:
-	 * evaluator is visible.
+	 * 0: theme and evaluator are both invisible; 1: theme is visible; 2: evaluator
+	 * is visible.
 	 */
 	private int					settingsOpen	= 0;
 
@@ -143,9 +143,9 @@ public final class VizGUI implements ComponentListener {
 
 	/**
 	 * Returns the current visualization settings (and you can call
-	 * getOriginalInstance() on it to get the current instance). If you make
-	 * changes to the state, you should call doApply() on the VizGUI object to
-	 * refresh the screen.
+	 * getOriginalInstance() on it to get the current instance). If you make changes
+	 * to the state, you should call doApply() on the VizGUI object to refresh the
+	 * screen.
 	 */
 	public VizState getVizState() {
 		return myState;
@@ -167,8 +167,8 @@ public final class VizGUI implements ComponentListener {
 	private JComponent				content				= null;
 
 	/**
-	 * Returns the JSplitPane containing the customization/evaluator panel in
-	 * the left and the graph on the right.
+	 * Returns the JSplitPane containing the customization/evaluator panel in the
+	 * left and the graph on the right.
 	 */
 	public JSplitPane getPanel() {
 		return splitpane;
@@ -180,14 +180,14 @@ public final class VizGUI implements ComponentListener {
 	}
 
 	/**
-	 * The last known divider position between the customization panel and the
-	 * graph panel.
+	 * The last known divider position between the customization panel and the graph
+	 * panel.
 	 */
 	private int				lastDividerPosition	= 0;
 
 	/**
-	 * If nonnull, you can pass in an expression to be evaluated. If it throws
-	 * an exception, that means an error has occurred.
+	 * If nonnull, you can pass in an expression to be evaluated. If it throws an
+	 * exception, that means an error has occurred.
 	 */
 	private final Computer	evaluator;
 
@@ -200,8 +200,7 @@ public final class VizGUI implements ComponentListener {
 	private String			thmFileName			= "";
 
 	/**
-	 * Returns the current THM filename; "" if no theme file is currently
-	 * loaded.
+	 * Returns the current THM filename; "" if no theme file is currently loaded.
 	 */
 	public String getThemeFilename() {
 		return thmFileName;
@@ -271,8 +270,8 @@ public final class VizGUI implements ComponentListener {
 		/** See the instance as a tree. */
 		Tree("tree");
 		/**
-		 * This is a unique String for this value; it should be kept consistent
-		 * in future versions.
+		 * This is a unique String for this value; it should be kept consistent in
+		 * future versions.
 		 */
 		private final String id;
 
@@ -282,8 +281,8 @@ public final class VizGUI implements ComponentListener {
 		}
 
 		/**
-		 * Given an id, return the enum value corresponding to it (if there's no
-		 * match, then return Viz).
+		 * Given an id, return the enum value corresponding to it (if there's no match,
+		 * then return Viz).
 		 */
 		private static VisualizerMode parse(String id) {
 			for (VisualizerMode vm : values())
@@ -298,8 +297,8 @@ public final class VizGUI implements ComponentListener {
 		}
 
 		/**
-		 * Reads the current value of the Java preference object (if it's not
-		 * set, then return Viz).
+		 * Reads the current value of the Java preference object (if it's not set, then
+		 * return Viz).
 		 */
 		public static VisualizerMode get() {
 			return parse(Preferences.userNodeForPackage(Util.class).get("VisualizerMode", ""));
@@ -333,14 +332,14 @@ public final class VizGUI implements ComponentListener {
 	// ==============================================================================================//
 
 	/**
-	 * If true, that means the event handlers should return a Runner
-	 * encapsulating them, rather than perform the actual work.
+	 * If true, that means the event handlers should return a Runner encapsulating
+	 * them, rather than perform the actual work.
 	 */
 	private boolean					wrap		= false;
 
 	/**
-	 * Wraps the calling method into a Runnable whose run() will call the
-	 * calling method with (false) as the only argument.
+	 * Wraps the calling method into a Runnable whose run() will call the calling
+	 * method with (false) as the only argument.
 	 */
 	private Runner wrapMe() {
 		final String name;
@@ -377,8 +376,8 @@ public final class VizGUI implements ComponentListener {
 	}
 
 	/**
-	 * Wraps the calling method into a Runnable whose run() will call the
-	 * calling method with (false,argument) as the two arguments.
+	 * Wraps the calling method into a Runnable whose run() will call the calling
+	 * method with (false,argument) as the two arguments.
 	 */
 	private Runner wrapMe(final Object argument) {
 		final String name;
@@ -417,59 +416,57 @@ public final class VizGUI implements ComponentListener {
 	}
 
 	/**
-	 * Creates a new visualization GUI window; this method can only be called by
-	 * the AWT event thread.
+	 * Creates a new visualization GUI window; this method can only be called by the
+	 * AWT event thread.
 	 * 
-	 * @param standalone - whether the JVM should shutdown after the last file
-	 *            is closed
-	 * @param xmlFileName - the filename of the incoming XML file; "" if there's
-	 *            no file to open
-	 * @param windowmenu - if standalone==false and windowmenu!=null, then this
-	 *            will be added as a menu on the menubar
+	 * @param standalone - whether the JVM should shutdown after the last file is
+	 *            closed
+	 * @param xmlFileName - the filename of the incoming XML file; "" if there's no
+	 *            file to open
+	 * @param windowmenu - if standalone==false and windowmenu!=null, then this will
+	 *            be added as a menu on the menubar
 	 *            <p>
-	 *            Note: if standalone==false and xmlFileName.length()==0, then
-	 *            we will initially hide the window.
+	 *            Note: if standalone==false and xmlFileName.length()==0, then we
+	 *            will initially hide the window.
 	 */
 	public VizGUI(boolean standalone, String xmlFileName, JMenu windowmenu) {
 		this(standalone, xmlFileName, windowmenu, null, null);
 	}
 
 	/**
-	 * Creates a new visualization GUI window; this method can only be called by
-	 * the AWT event thread.
+	 * Creates a new visualization GUI window; this method can only be called by the
+	 * AWT event thread.
 	 * 
-	 * @param standalone - whether the JVM should shutdown after the last file
-	 *            is closed
-	 * @param xmlFileName - the filename of the incoming XML file; "" if there's
-	 *            no file to open
-	 * @param windowmenu - if standalone==false and windowmenu!=null, then this
-	 *            will be added as a menu on the menubar
+	 * @param standalone - whether the JVM should shutdown after the last file is
+	 *            closed
+	 * @param xmlFileName - the filename of the incoming XML file; "" if there's no
+	 *            file to open
+	 * @param windowmenu - if standalone==false and windowmenu!=null, then this will
+	 *            be added as a menu on the menubar
 	 * @param enumerator - if it's not null, it provides solution enumeration
 	 *            ability
-	 * @param evaluator - if it's not null, it provides solution evaluation
-	 *            ability
+	 * @param evaluator - if it's not null, it provides solution evaluation ability
 	 *            <p>
-	 *            Note: if standalone==false and xmlFileName.length()==0, then
-	 *            we will initially hide the window.
+	 *            Note: if standalone==false and xmlFileName.length()==0, then we
+	 *            will initially hide the window.
 	 */
 	public VizGUI(boolean standalone, String xmlFileName, JMenu windowmenu, Computer enumerator, Computer evaluator) {
 		this(standalone, xmlFileName, windowmenu, enumerator, evaluator, true);
 	}
 
 	/**
-	 * Creates a new visualization GUI window; this method can only be called by
-	 * the AWT event thread.
+	 * Creates a new visualization GUI window; this method can only be called by the
+	 * AWT event thread.
 	 * 
-	 * @param standalone - whether the JVM should shutdown after the last file
-	 *            is closed
-	 * @param xmlFileName - the filename of the incoming XML file; "" if there's
-	 *            no file to open
-	 * @param windowmenu - if standalone==false and windowmenu!=null, then this
-	 *            will be added as a menu on the menubar
+	 * @param standalone - whether the JVM should shutdown after the last file is
+	 *            closed
+	 * @param xmlFileName - the filename of the incoming XML file; "" if there's no
+	 *            file to open
+	 * @param windowmenu - if standalone==false and windowmenu!=null, then this will
+	 *            be added as a menu on the menubar
 	 * @param enumerator - if it's not null, it provides solution enumeration
 	 *            ability
-	 * @param evaluator - if it's not null, it provides solution evaluation
-	 *            ability
+	 * @param evaluator - if it's not null, it provides solution evaluation ability
 	 * @param makeWindow - if false, then we will only construct the JSplitPane,
 	 *            without making the window
 	 *            <p>
@@ -844,8 +841,8 @@ public final class VizGUI implements ComponentListener {
 	}
 
 	/**
-	 * Helper method that creates a button and add it to both the
-	 * "SolutionButtons" list, as well as the toolbar.
+	 * Helper method that creates a button and add it to both the "SolutionButtons"
+	 * list, as well as the toolbar.
 	 */
 	private JButton makeSolutionButton(String label, String toolTip, String image, ActionListener mode) {
 		JButton button = OurUtil.button(label, toolTip, image, mode);
@@ -855,8 +852,8 @@ public final class VizGUI implements ComponentListener {
 	}
 
 	/**
-	 * Helper method that returns a concise description of the instance
-	 * currently being displayed.
+	 * Helper method that returns a concise description of the instance currently
+	 * being displayed.
 	 */
 	private String makeVizTitle() {
 		String filename = (myState != null ? myState.getOriginalInstance().filename : "");
@@ -877,8 +874,8 @@ public final class VizGUI implements ComponentListener {
 	}
 
 	/**
-	 * Helper method that inserts "filename" into the "recently opened THEME
-	 * file list".
+	 * Helper method that inserts "filename" into the "recently opened THEME file
+	 * list".
 	 */
 	private void addThemeHistory(String filename) {
 		String name0 = Theme0.get(), name1 = Theme1.get(), name2 = Theme2.get();
@@ -1001,8 +998,8 @@ public final class VizGUI implements ComponentListener {
 	}
 
 	/**
-	 * This method saves a specific current theme (if filename==null, it asks
-	 * the user); returns true if it succeeded.
+	 * This method saves a specific current theme (if filename==null, it asks the
+	 * user); returns true if it succeeded.
 	 */
 	public boolean saveThemeFile(String filename) {
 		if (myState == null)
@@ -1066,8 +1063,8 @@ public final class VizGUI implements ComponentListener {
 
 	/**
 	 * This method closes the current instance; if there are previously loaded
-	 * files, we will load one of them; otherwise, this window will set itself
-	 * as invisible (if not in standalone mode), or it will terminate the entire
+	 * files, we will load one of them; otherwise, this window will set itself as
+	 * invisible (if not in standalone mode), or it will terminate the entire
 	 * application (if in standalone mode).
 	 */
 	private Runner doClose() {
@@ -1086,8 +1083,8 @@ public final class VizGUI implements ComponentListener {
 	}
 
 	/**
-	 * This method closes every XML file. If in standalone mode, the JVM will
-	 * then shutdown, otherwise it will just set the window invisible.
+	 * This method closes every XML file. If in standalone mode, the JVM will then
+	 * shutdown, otherwise it will just set the window invisible.
 	 */
 	private Runner doCloseAll() {
 		if (wrap)
@@ -1321,7 +1318,8 @@ public final class VizGUI implements ComponentListener {
 
 		final String ffn = finalFilename;
 		try {
-			getViewer().alloySaveAsPNG(finalFilename, 2.25, 72, 72, myGraphPanel.getSelectedAtoms());
+			getViewer().alloySaveAsPNG(finalFilename, 2.25, 144, 144, myGraphPanel.getSelectedAtoms());
+			System.out.println("Saved screenshot:  " + ffn);
 			final JFrame fr = frame;
 			new Thread(new Runnable() {
 				@Override
@@ -1346,7 +1344,6 @@ public final class VizGUI implements ComponentListener {
 
 	}
 
-	
 	/** This method inserts "Minimize" and "Maximize" entries into a JMenu. */
 	public void addMinMaxActions(JMenu menu) {
 		try {
