@@ -28,6 +28,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +86,8 @@ public final class VizGraphPanel extends JPanel {
 	private final JPanel					graphPanel;
 
 	/**
-	 * The lowerhalf of the panel (showing the comboboxes for choosing the
-	 * projected atoms).
+	 * The lowerhalf of the panel (showing the comboboxes for choosing the projected
+	 * atoms).
 	 */
 	private final JPanel					navPanel;
 
@@ -99,9 +100,15 @@ public final class VizGraphPanel extends JPanel {
 	/** This is the list of TypePanel(s) we've already constructed. */
 	private final Map<AlloyType,TypePanel>	type2panel			= new TreeMap<AlloyType,TypePanel>();
 
+	/** this is a map of atom names to values for projections **/
+	private final Map<String,String>		selectedAtoms		= new HashMap<>();
+
+	public Map<String,String> getSelectedAtoms() {
+		return Collections.unmodifiableMap(selectedAtoms);
+	}
+
 	/**
-	 * Inner class that displays a combo box of possible projection atom
-	 * choices.
+	 * Inner class that displays a combo box of possible projection atom choices.
 	 */
 	final class TypePanel extends JPanel {
 		/** This ensures the class can be serialized reliably. */
@@ -109,8 +116,8 @@ public final class VizGraphPanel extends JPanel {
 		/** The type being projected. */
 		private final AlloyType			type;
 		/**
-		 * The list of atoms; can be an empty list if there are no atoms in this
-		 * type to be projected.
+		 * The list of atoms; can be an empty list if there are no atoms in this type to
+		 * be projected.
 		 */
 		private final List<AlloyAtom>	atoms;
 		/** The list of atom names; atomnames.empty() iff atoms.isEmpty() */
@@ -208,8 +215,7 @@ public final class VizGraphPanel extends JPanel {
 		}
 
 		/**
-		 * Returns the currently-selected atom; returns null if the list is
-		 * empty.
+		 * Returns the currently-selected atom; returns null if the list is empty.
 		 */
 		public AlloyAtom getAlloyAtom() {
 			int i = atomCombo.getSelectedIndex();
@@ -226,12 +232,12 @@ public final class VizGraphPanel extends JPanel {
 	}
 
 	/**
-	 * Create a splitpane showing the graph on top, as well as projection
-	 * comboboxes on the bottom.
+	 * Create a splitpane showing the graph on top, as well as projection comboboxes
+	 * on the bottom.
 	 * 
 	 * @param vizState - the current visualization settings
-	 * @param seeDot - true if we want to see the DOT source code, false if we
-	 *            want it rendered as a graph
+	 * @param seeDot - true if we want to see the DOT source code, false if we want
+	 *            it rendered as a graph
 	 */
 	public VizGraphPanel(VizState vizState, boolean seeDot) {
 		Border b = new EmptyBorder(0, 0, 0, 0);
@@ -286,16 +292,21 @@ public final class VizGraphPanel extends JPanel {
 		for (AlloyType type : vizState.getProjectedTypes()) {
 			List<AlloyAtom> atoms = vizState.getOriginalInstance().type2atoms(type);
 			TypePanel tp = type2panel.get(type);
-			if (tp != null && tp.getAlloyAtom() != null && !atoms.contains(tp.getAlloyAtom()))
-				tp = null;
-			if (tp != null && tp.getAlloyAtom() == null && atoms.size() > 0)
-				tp = null;
-			if (tp != null && !tp.upToDate(type, atoms))
-				tp = null;
-			if (tp == null)
+			if (tp != null) {
+				if (tp.getAlloyAtom() != null && !atoms.contains(tp.getAlloyAtom())) {
+					tp = null;
+				} else if (tp.getAlloyAtom() == null && atoms.size() > 0)
+					tp = null;
+				else if (!tp.upToDate(type, atoms))
+					tp = null;
+			}
+
+			else
 				type2panel.put(type, tp = new TypePanel(type, atoms, null));
+
 			navPanel.add(tp);
 			map.put(tp.getAlloyType(), tp.getAlloyAtom());
+			selectedAtoms.put(type.toString(), tp.getAlloyAtom().toString());
 		}
 		currentProjection = new AlloyProjection(map);
 		JPanel graph = vizState.getGraph(currentProjection);
@@ -338,8 +349,8 @@ public final class VizGraphPanel extends JPanel {
 	}
 
 	/**
-	 * Retrieves the actual GraphViewer object that contains the graph (or null
-	 * if the graph hasn't loaded yet)
+	 * Retrieves the actual GraphViewer object that contains the graph (or null if
+	 * the graph hasn't loaded yet)
 	 */
 	public GraphViewer alloyGetViewer() {
 		return viewer;

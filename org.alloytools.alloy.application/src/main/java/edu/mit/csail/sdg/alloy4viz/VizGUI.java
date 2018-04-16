@@ -106,6 +106,7 @@ public final class VizGUI implements ComponentListener {
 	private final JPopupMenu	projectionPopup;
 
 	/** The buttons on the toolbar. */
+	@SuppressWarnings("unused")
 	private final JButton		projectionButton, openSettingsButton, closeSettingsButton, magicLayout,
 			loadSettingsButton, saveSettingsButton, saveAsSettingsButton, resetSettingsButton, updateSettingsButton,
 			openEvaluatorButton, closeEvaluatorButton, enumerateButton, vizButton, treeButton,
@@ -1320,14 +1321,14 @@ public final class VizGUI implements ComponentListener {
 
 		final String ffn = finalFilename;
 		try {
-			getViewer().alloySaveAsPNG(finalFilename, 2.25, 72, 72);
+			getViewer().alloySaveAsPNG(finalFilename, 2.25, 72, 72, myGraphPanel.getSelectedAtoms());
 			final JFrame fr = frame;
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					fr.setTitle(">>> Saved " + ffn);
 					try {
-						Thread.sleep(2500);
+						Thread.sleep(5000);
 						fr.setTitle(origTitle);
 					} catch (InterruptedException e) {
 						e.printStackTrace();

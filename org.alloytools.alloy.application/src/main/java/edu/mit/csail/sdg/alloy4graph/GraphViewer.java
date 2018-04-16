@@ -15,15 +15,17 @@
 
 package edu.mit.csail.sdg.alloy4graph;
 
+import static java.awt.Color.BLACK;
+import static java.awt.Color.WHITE;
 import static java.awt.event.InputEvent.BUTTON1_MASK;
 import static java.awt.event.InputEvent.BUTTON3_MASK;
 import static java.awt.event.InputEvent.CTRL_MASK;
-import static java.awt.Color.WHITE;
-import static java.awt.Color.BLACK;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -37,6 +39,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -47,6 +53,7 @@ import javax.swing.JViewport;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import edu.mit.csail.sdg.alloy4.OurDialog;
 import edu.mit.csail.sdg.alloy4.OurPDFWriter;
 import edu.mit.csail.sdg.alloy4.OurPNGWriter;
@@ -71,20 +78,20 @@ public final strictfp class GraphViewer extends JPanel {
 	private double				scale				= 1d;
 
 	/**
-	 * The currently hovered GraphNode or GraphEdge or group, or null if there
-	 * is none.
+	 * The currently hovered GraphNode or GraphEdge or group, or null if there is
+	 * none.
 	 */
 	private Object				highlight			= null;
 
 	/**
-	 * The currently selected GraphNode or GraphEdge or group, or null if there
-	 * is none.
+	 * The currently selected GraphNode or GraphEdge or group, or null if there is
+	 * none.
 	 */
 	private Object				selected			= null;
 
 	/**
-	 * The button that initialized the drag-and-drop; this value is undefined
-	 * when we're not currently doing drag-and-drop.
+	 * The button that initialized the drag-and-drop; this value is undefined when
+	 * we're not currently doing drag-and-drop.
 	 */
 	private int					dragButton			= 0;
 
@@ -97,8 +104,7 @@ public final strictfp class GraphViewer extends JPanel {
 	}
 
 	/**
-	 * Returns the annotation for the node or edge at location x,y (or null if
-	 * none)
+	 * Returns the annotation for the node or edge at location x,y (or null if none)
 	 */
 	public Object alloyGetAnnotationAtXY(int mouseX, int mouseY) {
 		Object obj = alloyFind(mouseX, mouseY);
@@ -110,8 +116,7 @@ public final strictfp class GraphViewer extends JPanel {
 	}
 
 	/**
-	 * Returns the annotation for the currently selected node/edge (or null if
-	 * none)
+	 * Returns the annotation for the currently selected node/edge (or null if none)
 	 */
 	public Object alloyGetSelectedAnnotation() {
 		if (selected instanceof GraphNode)
@@ -122,8 +127,8 @@ public final strictfp class GraphViewer extends JPanel {
 	}
 
 	/**
-	 * Returns the annotation for the currently highlighted node/edge (or null
-	 * if none)
+	 * Returns the annotation for the currently highlighted node/edge (or null if
+	 * none)
 	 */
 	public Object alloyGetHighlightedAnnotation() {
 		if (highlight instanceof GraphNode)
@@ -297,12 +302,11 @@ public final strictfp class GraphViewer extends JPanel {
 	}
 
 	/**
-	 * This color is used as the background for a JTextField that contains bad
-	 * data.
+	 * This color is used as the background for a JTextField that contains bad data.
 	 * <p>
 	 * Note: we intentionally choose to make it an instance field rather than a
-	 * static field, since we want to make sure we only instantiate it from the
-	 * AWT Event Dispatching thread.
+	 * static field, since we want to make sure we only instantiate it from the AWT
+	 * Event Dispatching thread.
 	 */
 	private final Color				badColor	= new Color(255, 200, 200);
 
@@ -313,8 +317,8 @@ public final strictfp class GraphViewer extends JPanel {
 	private boolean					recursive	= false;
 
 	/**
-	 * This updates the three input boxes and the three accompanying text
-	 * labels, then return the width in pixels.
+	 * This updates the three input boxes and the three accompanying text labels,
+	 * then return the width in pixels.
 	 */
 	private int alloyRefresh(int who, double ratio, JTextField w1, JLabel w2, JTextField h1, JLabel h2, JTextField d1,
 			JLabel d2, JLabel msg) {
@@ -386,8 +390,8 @@ public final strictfp class GraphViewer extends JPanel {
 	}
 
 	/**
-	 * Export the current drawing as a PNG or PDF file by asking the user for
-	 * the filename and the image resolution.
+	 * Export the current drawing as a PNG or PDF file by asking the user for the
+	 * filename and the image resolution.
 	 */
 	public void alloySaveAs() {
 		// Figure out the initial width, height, and DPI that we might want to
@@ -626,10 +630,15 @@ public final strictfp class GraphViewer extends JPanel {
 	}
 
 	/**
-	 * Export the current drawing as a PNG file with the given file name and
-	 * image resolution.
+	 * Export the current drawing as a PNG file with the given file name and image
+	 * resolution.
 	 */
 	public void alloySaveAsPNG(String filename, double scale, double dpiX, double dpiY) throws IOException {
+		this.alloySaveAsPNG(filename, scale, dpiX, dpiY, new HashMap<>());
+	}
+
+	public void alloySaveAsPNG(String filename, double scale, double dpiX, double dpiY,
+			Map<String,String> projectionInfo) throws IOException {
 		try {
 			int width = (int) (graph.getTotalWidth() * scale);
 			if (width < 10)
@@ -645,7 +654,24 @@ public final strictfp class GraphViewer extends JPanel {
 			gr.scale(scale, scale);
 			gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			graph.draw(new Artist(gr), scale, null, false);
-			OurPNGWriter.writePNG(bf, filename, dpiX, dpiY);
+			int maxLen = 0;
+			for (Entry<String,String> entry : projectionInfo.entrySet()) {
+				maxLen = Math.max(maxLen, entry.getKey().length() + entry.getValue().length() + 4);
+			}
+			BufferedImage biggerBF = new BufferedImage(width + maxLen * 12, height, BufferedImage.TYPE_INT_RGB);
+			Graphics2D bgr = (Graphics2D) biggerBF.getGraphics();
+			bgr.drawImage(bf, 0, 0, null);
+			bgr.setColor(Color.GRAY);
+			bgr.fillRect(width - 50, 0, 50 + maxLen * 12, height);
+			bgr.setColor(Color.WHITE);
+			int atomY = 20;
+			bgr.setFont(new Font(null, 0, 24));
+			for (Entry<String,String> entry : projectionInfo.entrySet()) {
+				bgr.drawString(entry.getKey() + ": " + entry.getValue(), width - 40, atomY);
+				atomY += 25;
+			}
+
+			OurPNGWriter.writePNG(biggerBF, filename, dpiX, dpiY);
 		} catch (Throwable ex) {
 			if (ex instanceof IOException)
 				throw (IOException) ex;
