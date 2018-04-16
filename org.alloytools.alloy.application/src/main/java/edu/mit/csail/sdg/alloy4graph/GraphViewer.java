@@ -654,22 +654,13 @@ public final strictfp class GraphViewer extends JPanel {
 			gr.scale(scale, scale);
 			gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			graph.draw(new Artist(gr), scale, null, false);
-			int maxLen = 0;
-			for (Entry<String,String> entry : projectionInfo.entrySet()) {
-				maxLen = Math.max(maxLen, entry.getKey().length() + entry.getValue().length() + 4);
+
+			if (projectionInfo.size() == 0) {
+				OurPNGWriter.writePNG(bf, filename, dpiX, dpiY);
+				return;
 			}
-			BufferedImage biggerBF = new BufferedImage(width + maxLen * 12, height, BufferedImage.TYPE_INT_RGB);
-			Graphics2D bgr = (Graphics2D) biggerBF.getGraphics();
-			bgr.drawImage(bf, 0, 0, null);
-			bgr.setColor(Color.GRAY);
-			bgr.fillRect(width - 50, 0, 50 + maxLen * 12, height);
-			bgr.setColor(Color.WHITE);
-			int atomY = 20;
-			bgr.setFont(new Font(null, 0, 24));
-			for (Entry<String,String> entry : projectionInfo.entrySet()) {
-				bgr.drawString(entry.getKey() + ": " + entry.getValue(), width - 40, atomY);
-				atomY += 25;
-			}
+
+			BufferedImage biggerBF = addProjectionInfo(projectionInfo, bf);
 
 			OurPNGWriter.writePNG(biggerBF, filename, dpiX, dpiY);
 		} catch (Throwable ex) {
@@ -677,6 +668,25 @@ public final strictfp class GraphViewer extends JPanel {
 				throw (IOException) ex;
 			throw new IOException("Failure writing the PNG file to " + filename + " (" + ex + ")");
 		}
+	}
+
+	private BufferedImage addProjectionInfo(Map<String,String> projectionInfo, BufferedImage bf) {
+		int width = bf.getWidth(), height = bf.getHeight();
+		final int fontSize = 24;
+		final int projInfoHeight = (projectionInfo.size() + 2) * fontSize;
+		BufferedImage biggerBF = new BufferedImage(width, height + projInfoHeight, BufferedImage.TYPE_INT_RGB);
+		Graphics2D bgr = (Graphics2D) biggerBF.getGraphics();
+		bgr.setColor(Color.GRAY);
+		bgr.fillRect(0, 0, biggerBF.getWidth(), biggerBF.getHeight());
+		bgr.drawImage(bf, 0, 0, null);
+		bgr.setColor(Color.WHITE);
+		int atomY = height + fontSize * 2;
+		bgr.setFont(new Font(null, 0, fontSize));
+		for (Entry<String,String> entry : projectionInfo.entrySet()) {
+			bgr.drawString(entry.getKey() + ": " + entry.getValue(), fontSize, atomY);
+			atomY += fontSize;
+		}
+		return biggerBF;
 	}
 
 	/** Show the popup menu at location (x,y) */

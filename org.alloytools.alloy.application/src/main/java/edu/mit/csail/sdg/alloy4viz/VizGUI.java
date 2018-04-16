@@ -1297,7 +1297,7 @@ public final class VizGUI implements ComponentListener {
 			return wrapMe();
 
 		final String origTitle = frame.getTitle();
-		frame.setTitle(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		frame.setTitle(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SAVING...");
 		String modelFilename = (myState != null ? myState.getOriginalInstance().filename : null);
 
 		String folderPrefix, screenshotName;
@@ -1326,7 +1326,7 @@ public final class VizGUI implements ComponentListener {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					fr.setTitle(">>> Saved " + ffn);
+					fr.setTitle(">>> Saved screenshot:  " + ffn);
 					try {
 						Thread.sleep(5000);
 						fr.setTitle(origTitle);
